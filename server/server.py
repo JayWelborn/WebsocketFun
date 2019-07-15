@@ -1,3 +1,4 @@
+import sys
 from asyncio import get_event_loop
 from pathlib import Path
 from ssl import SSLContext, PROTOCOL_TLS_SERVER
@@ -7,12 +8,18 @@ import websockets
 
 async def hello(websocket, path):
     name = await websocket.recv()
-    print(f"< {name}")
+    print(f"<- {name}")
 
     greeting = f"Hello {name}!"
-
     await websocket.send(greeting)
-    print(f"> {greeting}")
+
+    while True:
+        command = input(f"What should {name} do? ")
+
+        await websocket.send(command)
+        print(f"-> {command}")
+        if command == 'Exit':
+            sys.exit(0)
 
 
 ssl_context = SSLContext(PROTOCOL_TLS_SERVER)
